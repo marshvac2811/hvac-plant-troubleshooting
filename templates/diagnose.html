@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Interactive Diagnosis{% endblock %}
+{% block content %}
+<header>
+  <span class="badge-tool">RULE-BASED DIAGNOSTIC ENGINE</span>
+  <h1>Interactive Diagnosis</h1>
+  <p>Enter actual observed readings — the tool evaluates the diagnostic rule live and tells you if it fires.</p>
+</header>
+
+{% if error %}<div class="error-banner">{{ error }}</div>{% endif %}
+
+<div class="panel">
+  <span class="panel-corner tl"></span><span class="panel-corner tr"></span>
+  <span class="panel-corner bl"></span><span class="panel-corner br"></span>
+  <h2>Select a Diagnostic Rule</h2>
+  <form method="GET" style="margin-bottom:16px;">
+    <select name="rule_id" onchange="this.form.submit()">
+      {% for key, r in rules.items() %}
+      <option value="{{ key }}" {% if selected_rule == key %}selected{% endif %}>{{ r.label }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  {% if rule_def %}
+  <p style="font-size:13px; color:var(--steel); margin-bottom:16px;"><strong>Rule:</strong> {{ rule_def.description }}</p>
+
+  <form method="POST">
+    <input type="hidden" name="rule_id" value="{{ selected_rule }}">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+      {% for inp in rule_def.inputs %}
+      <div>
+        <label style="display:block; font-size:11px; text-transform:uppercase; color:var(--steel); margin-bottom:6px; font-weight:600;">{{ inp.label }}</label>
+        {% if inp.type == 'bool' %}
+        <select name="{{ inp.key }}" style="width:100%;">
+          <option value="">-- Select --</option>
+          <option value="yes" {% if form_values.get(inp.key) == 'yes' %}selected{% endif %}>Yes</option>
+          <option value="no" {% if form_values.get(inp.key) == 'no' %}selected{% endif %}>No</option>
+        </select>
+        {% else %}
+        <input type="number" step="any" name="{{ inp.key }}" value="{{ form_values.get(inp.key, '') }}" style="width:100%;" required>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn">Evaluate</button>
+  </form>
+  {% endif %}
+</div>
+
+{% if result %}
+<div class="panel">
+  <span class="panel-corner tl"></span><span class="panel-corner tr"></span>
+  <span class="panel-corner bl"></span><span class="panel-corner br"></span>
+  <h2>Evaluation Result</h2>
+
+  <table class="ref">
+    <tr><th>Condition</th><th>Met?</th></tr>
+    {% for cond_text, met in result.conditions_met %}
+    <tr>
+      <td>{{ cond_text }}</td>
+      <td style="color: {% if met %}var(--green){% else %}var(--red){% endif %}; font-weight:600;">{{ 'Yes' if met else 'No' }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% if result.all_conditions_met %}
+  <div style="margin-top:16px; padding:16px; background:#EEF5EF; border-left:3px solid var(--green);">
+    <strong style="color:var(--green);">Rule fired — likely diagnosis:</strong> {{ result.conclusion }}
+  </div>
+  {% else %}
+  <div style="margin-top:16px; padding:16px; background:#F5F3EE; border-left:3px solid var(--steel);">
+    <strong style="color:var(--steel);">Rule did not fire</strong> — not all conditions were met, so this specific diagnosis is not indicated. Check other possible causes for this symptom.
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="disclaimer">
+  <strong>Field-expert diagnostic rules.</strong> These rules were authored from real HVAC/MEP field
+  troubleshooting experience — treat results as decision support alongside professional judgment and
+  on-site inspection, not as a substitute for either.
+</div>
+{% endblock %}

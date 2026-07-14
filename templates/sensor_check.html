@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Sensor Validation{% endblock %}
+{% block content %}
+<header>
+  <span class="badge-tool">SANITY CHECK TOOL</span>
+  <h1>Sensor Validation Checker</h1>
+  <p>Quick logical sanity checks for sensor readings — catches obviously wrong values before deeper diagnosis.</p>
+</header>
+
+<div class="panel">
+  <span class="panel-corner tl"></span><span class="panel-corner tr"></span>
+  <span class="panel-corner bl"></span><span class="panel-corner br"></span>
+  <h2>Enter Readings to Check</h2>
+  <form method="POST">
+    {% for rule in validation_rules %}
+    <div style="margin-bottom:18px; padding-bottom:18px; border-bottom:1px solid var(--paper-line);">
+      <p style="font-size:13px; font-weight:600; color:var(--navy); margin-bottom:10px;">{{ rule.rule }}</p>
+      <div style="display:flex; gap:16px; align-items:end;">
+        <div>
+          <label style="display:block; font-size:11px; text-transform:uppercase; color:var(--steel); margin-bottom:6px; font-weight:600;">{{ rule.field_a }}</label>
+          <input type="number" step="any" name="val_a_{{ loop.index0 }}" placeholder="°C">
+        </div>
+        <div>
+          <label style="display:block; font-size:11px; text-transform:uppercase; color:var(--steel); margin-bottom:6px; font-weight:600;">{{ rule.field_b }}</label>
+          <input type="number" step="any" name="val_b_{{ loop.index0 }}" placeholder="°C">
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn">Check All</button>
+  </form>
+</div>
+
+{% if results %}
+<div class="panel">
+  <span class="panel-corner tl"></span><span class="panel-corner tr"></span>
+  <span class="panel-corner bl"></span><span class="panel-corner br"></span>
+  <h2>Results</h2>
+  {% for r in results %}
+  <div style="padding:10px 0; border-bottom:1px solid var(--paper-line);">
+    <strong>{{ r.rule.label }}:</strong>
+    {{ r.rule.field_a }} = {{ r.val_a }}, {{ r.rule.field_b }} = {{ r.val_b }}
+    {% if r.valid == True %}
+      <span style="color:var(--green); font-weight:600;"> ✓ Valid</span>
+    {% elif r.valid == False %}
+      <span style="color:var(--red); font-weight:600;"> ✗ Invalid — sensor may be faulty or mislabeled</span>
+    {% else %}
+      <span style="color:var(--steel);"> — could not evaluate</span>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

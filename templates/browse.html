@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Browse Symptoms{% endblock %}
+{% block content %}
+<header>
+  <span class="badge-tool">REFERENCE LOOKUP</span>
+  <h1>Browse Symptoms &amp; Causes</h1>
+  <p>Select equipment and a symptom to see possible causes, required data, and recommended actions.</p>
+</header>
+
+<div class="panel">
+  <span class="panel-corner tl"></span><span class="panel-corner tr"></span>
+  <span class="panel-corner bl"></span><span class="panel-corner br"></span>
+  <h2>Select Equipment &amp; Symptom</h2>
+  <form method="GET" style="display:flex; gap:12px; flex-wrap:wrap; align-items:end;">
+    <div>
+      <label style="display:block; font-size:11px; text-transform:uppercase; color:var(--steel); margin-bottom:6px; font-weight:600;">Equipment</label>
+      <select name="equipment" onchange="this.form.submit()">
+        {% for key, eq in all_equipment.items() %}
+        <option value="{{ key }}" {% if equipment_key == key %}selected{% endif %}>{{ eq.label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label style="display:block; font-size:11px; text-transform:uppercase; color:var(--steel); margin-bottom:6px; font-weight:600;">Symptom</label>
+      <select name="symptom" onchange="this.form.submit()">
+        <option value="">-- Select a symptom --</option>
+        {% if equipment %}
+        {% for skey, s in equipment.symptoms.items() %}
+        <option value="{{ skey }}" {% if symptom_key == skey %}selected{% endif %}>{{ s.label }}</option>
+        {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+  </form>
+</div>
+
+{% if symptom %}
+<div class="panel">
+  <span class="panel-corner tl"></span><span class="panel-corner tr"></span>
+  <span class="panel-corner bl"></span><span class="panel-corner br"></span>
+  <h2>{{ equipment.label }} — {{ symptom.label }}</h2>
+  <table class="ref">
+    <tr><th>Possible Cause</th><th>Required Data</th><th>Diagnostic Logic</th><th>Recommended Action</th></tr>
+    {% for c in symptom.causes %}
+    <tr>
+      <td class="cause">{{ c.cause }}</td>
+      <td>{{ c.required_data or '—' }}</td>
+      <td>{{ c.logic or '—' }}</td>
+      <td>{{ c.action or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% if symptom.rule_id %}
+  <p style="margin-top:14px; font-size:13px;">
+    <strong>This symptom has an interactive diagnostic rule available.</strong>
+    <a href="{{ url_for('diagnose', rule_id=symptom.rule_id) }}" style="color:var(--navy);">Go to Interactive Diagnosis →</a>
+  </p>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="disclaimer">
+  <strong>Field-expert diagnostic reference.</strong> This content reflects real HVAC/MEP troubleshooting
+  judgment developed over 26+ years of field experience — it is a decision-support reference, not a
+  substitute for on-site inspection and professional judgment for the specific system and conditions.
+</div>
+{% endblock %}

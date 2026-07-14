@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}HVAC Plant Troubleshooting{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B3A5C; --navy-light: #2C5580; --paper: #FAFAF7; --paper-line: #E4E0D6;
+    --amber: #E8823D; --steel: #6B7684; --green: #4A7C59; --red: #B5544A; --ink: #1C1F24;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.5; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 32px 24px 60px; }
+
+  .top-brand { font-family: 'IBM Plex Sans', sans-serif; font-weight: 700; font-size: 15px; color: var(--navy); margin-bottom: 4px; }
+  .top-sub { font-size: 12px; color: var(--steel); margin-bottom: 20px; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid var(--paper-line); flex-wrap: wrap; }
+  .tab { padding: 10px 16px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--steel); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+  .tab:hover { color: var(--navy); }
+
+  header { margin-bottom: 24px; }
+  header h1 { font-family: 'IBM Plex Sans', sans-serif; font-size: 21px; font-weight: 700; color: var(--navy); margin: 0 0 6px 0; }
+  header p { margin: 0; color: var(--steel); font-size: 13px; }
+  .badge-tool { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); border: 1px solid var(--navy); padding: 2px 8px; margin-bottom: 10px; transform: rotate(-1deg); }
+
+  .panel {
+    position: relative; background: #fff; border: 1px solid var(--paper-line);
+    padding: 24px 26px; margin-bottom: 24px;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 24px 24px; background-position: -1px -1px;
+  }
+  .panel-corner { position: absolute; width: 9px; height: 9px; border-color: var(--navy); opacity: 0.55; }
+  .panel-corner.tl { top: -1px; left: -1px; border-top: 2px solid var(--navy); border-left: 2px solid var(--navy); }
+  .panel-corner.tr { top: -1px; right: -1px; border-top: 2px solid var(--navy); border-right: 2px solid var(--navy); }
+  .panel-corner.bl { bottom: -1px; left: -1px; border-bottom: 2px solid var(--navy); border-left: 2px solid var(--navy); }
+  .panel-corner.br { bottom: -1px; right: -1px; border-bottom: 2px solid var(--navy); border-right: 2px solid var(--navy); }
+  .panel h2 { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--navy); margin: 0 0 16px 0; }
+
+  select, input { padding: 9px 10px; border: 1px solid var(--paper-line); font-family: 'Inter', sans-serif; font-size: 13px; background: #fff; }
+  select:focus, input:focus { outline: 2px solid var(--navy-light); outline-offset: 1px; border-color: var(--navy); }
+
+  .btn { display: inline-block; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 10px 20px; background: var(--navy); color: #fff; border: none; cursor: pointer; }
+  .btn:hover { background: var(--navy-light); }
+
+  .error-banner { padding: 12px 18px; font-size: 13px; font-weight: 500; margin-bottom: 20px; border-left: 3px solid var(--red); background: #FBEEEC; color: #8A342A; }
+
+  table.ref { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.ref th { text-align: left; font-family: 'IBM Plex Sans', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--steel); padding: 8px; border-bottom: 1px solid var(--paper-line); }
+  table.ref td { padding: 10px 8px; border-bottom: 1px solid var(--paper-line); vertical-align: top; }
+  table.ref td.cause { font-weight: 600; color: var(--navy); }
+
+  .priority-badge { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border: 1px solid currentColor; }
+  .priority-badge.Critical { color: var(--red); }
+  .priority-badge.High { color: var(--amber); }
+  .priority-badge.Medium { color: var(--navy-light); }
+  .priority-badge.Low { color: var(--steel); }
+
+  .disclaimer { font-size: 12px; color: var(--steel); background: #FDF0E6; border-left: 3px solid var(--amber); padding: 12px 16px; margin-top: 20px; }
+  .disclaimer strong { color: #8A4E1F; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-brand">HVAC PLANT TROUBLESHOOTING</div>
+  <div class="top-sub">Fault diagnosis knowledge base built from 26+ years of field HVAC/MEP experience</div>
+  <div class="tabs">
+    <a class="tab {% if active=='browse' %}active{% endif %}" href="{{ url_for('browse') }}">Browse Symptoms</a>
+    <a class="tab {% if active=='diagnose' %}active{% endif %}" href="{{ url_for('diagnose') }}">Interactive Diagnosis</a>
+    <a class="tab {% if active=='priority' %}active{% endif %}" href="{{ url_for('priority') }}">Fault Priority</a>
+    <a class="tab {% if active=='sensor' %}active{% endif %}" href="{{ url_for('sensor_check') }}">Sensor Validation</a>
+  </div>
+  {% block content %}{% endblock %}
+</div>
+</body>
+</html>

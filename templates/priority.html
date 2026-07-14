@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Fault Priority{% endblock %}
+{% block content %}
+<header>
+  <span class="badge-tool">REFERENCE MATRIX</span>
+  <h1>Fault Priority Matrix</h1>
+  <p>Reference priority classification for common HVAC plant faults.</p>
+</header>
+
+<div class="panel">
+  <span class="panel-corner tl"></span><span class="panel-corner tr"></span>
+  <span class="panel-corner bl"></span><span class="panel-corner br"></span>
+  <table class="ref">
+    <tr><th>Priority</th><th>Fault</th></tr>
+    {% for p in priority_list %}
+    <tr>
+      <td><span class="priority-badge {{ p.priority }}">{{ p.priority }}</span></td>
+      <td>{{ p.fault }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
